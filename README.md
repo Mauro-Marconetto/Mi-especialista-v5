@@ -13,20 +13,21 @@ The app needs your Firebase project's credentials to connect to the backend. Thi
 
 1.  **Create a new file named `.env`** in the root directory of this project (the same folder as this README file).
 2.  **Copy the content** from the `.env.example` file and paste it into your new `.env` file.
-3.  **Find your Firebase credentials:**
+3.  **Find your Firebase Web App credentials:**
     *   Go to the [Firebase Console](https://console.firebase.google.com/).
     *   Select your project (or create a new one).
     *   In the project overview, click the **Web (`</>`)** icon to add a web app or select an existing one.
     *   Go to **Project Settings** (click the gear icon ⚙️).
     *   In the "General" tab, find the `firebaseConfig` object in the code snippet.
 4.  **Fill in the values** for each `NEXT_PUBLIC_FIREBASE_*` variable in your `.env` file using the corresponding keys from your `firebaseConfig` object.
-5.  **Set the App URL**: Set `NEXT_PUBLIC_APP_URL` to the URL where your app is running (e.g., `http://localhost:9002` for local development, or your Cloud Workstation URL).
 
-### 2. Configure Google Cloud & Google Sign-In
+### 2. Configure Google Cloud Credentials
 
-For Google Meet and Google Sign-In integration to work, you need to configure OAuth credentials.
+For Google Meet integration and server-side operations to work, you need two sets of credentials.
 
-1.  **Get Google API Credentials**:
+#### a) OAuth 2.0 Client ID (for Google Meet & Calendar)
+
+1.  **Go to Google Cloud Console**:
     *   Go to the [Google Cloud Console - Credentials](https://console.cloud.google.com/apis/credentials).
     *   Click **"+ CREATE CREDENTIALS"** and select **"OAuth client ID"**.
     *   Choose **"Web application"** as the application type.
@@ -34,12 +35,26 @@ For Google Meet and Google Sign-In integration to work, you need to configure OA
     *   Under **"Authorized redirect URIs"**, add `YOUR_APP_URL/api/oauth2callback`. For example: `http://localhost:9002/api/oauth2callback`. This step is crucial.
     *   Click **Create**. Copy the **Client ID** and **Client Secret**.
 2.  **Fill in the `.env` file**: Paste the copied credentials into the `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` variables in your `.env` file.
-3.  **Authorize Domain in Firebase**:
+
+#### b) Service Account (for Firebase Admin)
+
+1.  **Go to Firebase Console**:
+    *   Navigate to **Project Settings** -> **Service accounts**.
+    *   Select the **"Firebase Admin SDK"** tab.
+    *   Click **"Generate new private key"**. A JSON file will be downloaded.
+2.  **Fill in the `.env` file**: Open the downloaded JSON file and copy the values into the corresponding variables in your `.env` file:
+    *   `GOOGLE_PROJECT_ID`: Copy the `project_id` value.
+    *   `GOOGLE_CLIENT_EMAIL`: Copy the `client_email` value.
+    *   `GOOGLE_PRIVATE_KEY`: Copy the entire `private_key` value. **IMPORTANT**: When you paste it, make sure to replace all newline characters (`\n`) with the literal characters `\\n`. The final result should be a single, long line of text within the quotes.
+
+### 3. Authorize Domains
+
+1.  **Authorize Domain in Firebase**:
     *   Go to the [Firebase Console](https://console.firebase.google.com/) and select your project.
     *   Go to **Authentication** -> **Settings** -> **Authorized domains**.
     *   Click **Add domain** and enter your app's domain (e.g., `localhost` for local development or the host from your Cloud Workstation URL).
 
-### 3. Set Firestore Security Rules & Data Structure
+### 4. Set Firestore Security Rules & Data Structure
 
 By default, your database is locked down. You need to apply security rules to allow the app to read and write data correctly.
 
@@ -125,7 +140,7 @@ service cloud.firestore {
 }
 ```
 
-### 4. Seed Your Database
+### 5. Seed Your Database
 
 The app needs a list of health insurances to work correctly. Run the following command in your terminal to populate the `insurances` collection in your Firestore database:
 
@@ -134,7 +149,7 @@ npm run seed:insurances
 ```
 This command will only add data if the `insurances` collection is empty.
 
-### 5. (Optional) Create an Admin User
+### 6. (Optional) Create an Admin User
 
 The application now includes an admin panel to approve new doctor profiles. To access it, you need to designate a user as an administrator.
 
@@ -152,7 +167,7 @@ The application now includes an admin panel to approve new doctor profiles. To a
     *   Navigate to `/admin/login` (e.g., `http://localhost:9002/admin/login`).
     *   Log in with the credentials of the user you just promoted to admin.
 
-### 6. Run the Application
+### 7. Run the Application
 
 Now you can start the development server:
 

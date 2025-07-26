@@ -14,42 +14,54 @@ import * as admin from 'firebase-admin';
 // Evita la reinicialización en entornos de "hot-reload"
 if (!admin.apps.length) {
   try {
-    // Cuando se despliega en un entorno de Google Cloud, las ADC se encuentran automáticamente.
-    // Para desarrollo local, estas variables de entorno deben estar en tu archivo .env.
     const serviceAccount: admin.ServiceAccount = {
       projectId: process.env.GOOGLE_PROJECT_ID,
       clientEmail: process.env.GOOGLE_CLIENT_EMAIL,
-      // Reemplaza los saltos de línea literales \n en la clave privada por \\n para que sean interpretados correctamente.
       privateKey: (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
     };
     
-    // El SDK de Admin intentará usar las variables de entorno si están presentes.
-    // Si no lo están (y estás en un entorno de Google Cloud), usará las credenciales del entorno.
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log('Firebase Admin SDK inicializado correctamente.');
-  } catch (error: any) {
-    // Si falla la inicialización con `cert`, intenta con `applicationDefault`.
-    // Esto cubre el caso en que las variables de entorno no están definidas, pero el entorno de ejecución (ej. Firebase Hosting) sí provee credenciales.
-    if (error.code === 'app/invalid-credential') {
-        try {
-            console.log('Credenciales de cuenta de servicio no encontradas o inválidas, intentando con Application Default Credentials...');
-            admin.initializeApp({
-              credential: admin.credential.applicationDefault(),
-            });
-            console.log('Firebase Admin SDK inicializado con Application Default Credentials.');
-        } catch (adcError: any) {
-             console.error('Error al inicializar Firebase Admin SDK con Application Default Credentials:', adcError);
-             throw new Error('No se pudo inicializar el Firebase Admin SDK. Asegúrate de que las variables de entorno o el entorno de ejecución estén configurados correctamente.');
-        }
+    // Check if the service account credentials are provided in the environment.
+    if (serviceAccount.projectId && serviceAccount.clientEmail && serviceAccount.privateKey) {
+       admin.initializeApp({
+         credential: admin.credential.cert(serviceAccount),
+       });
+       console.log('Firebase Admin SDK inicializado correctamente con credenciales de cuenta de servicio.');
     } else {
-        console.error('Error al inicializar Firebase Admin SDK:', error);
-        throw error;
+        // Fallback to Application Default Credentials if service account is not provided.
+        // This is useful for environments like Google Cloud Run, Cloud Functions, etc.
+        console.log('Credenciales de cuenta de servicio no encontradas en las variables de entorno, intentando con Application Default Credentials...');
+        admin.initializeApp({
+          credential: admin.credential.applicationDefault(),
+        });
+        console.log('Firebase Admin SDK inicializado con Application Default Credentials.');
     }
+  } catch (error: any) {
+    console.error('--------------------------------------------------------------------');
+    console.error('❌ ERROR FATAL: No se pudo inicializar el Firebase Admin SDK.');
+    console.error('Este es un problema de configuración y no un error en el código de la aplicación.');
+    console.error('CAUSA MÁS PROBABLE: Faltan las credenciales de la cuenta de servicio en tu entorno local.');
+    console.error('\nSOLUCIÓN:');
+    console.error('1. Ve a tu proyecto de Firebase -> Project Settings -> Service accounts.');
+    console.error('2. Haz clic en "Generate new private key" para descargar un archivo JSON.');
+    console.error('3. Abre tu archivo .env y añade las siguientes variables con los valores del JSON:');
+    console.error('   GOOGLE_PROJECT_ID="tu-project-id"');
+    console.error('   GOOGLE_CLIENT_EMAIL="tu-client-email"');
+    console.error('   GOOGLE_PRIVATE_KEY="tu-private-key" (Copia toda la clave, incluyendo "-----BEGIN PRIVATE KEY-----" y asegúrate de escapar los saltos de línea con \\n).');
+    console.error('\nConsulta el archivo README.md para más detalles.');
+    console.error('--------------------------------------------------------------------');
   }
 }
 
-const adminDb = admin.firestore();
+let adminDb: admin.firestore.Firestore;
+try {
+  adminDb = admin.firestore();
+} catch (e) {
+    console.error("Error al obtener la instancia de Firestore. El Admin SDK no se inicializó correctamente.")
+    // We create a dummy object here to avoid further crashes in the app,
+    // although any attempt to use it will fail.
+    // The console error above is the most important part.
+    adminDb = {} as admin.firestore.Firestore;
+}
+
 
 export { admin, adminDb };
