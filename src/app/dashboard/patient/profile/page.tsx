@@ -171,19 +171,19 @@ export default function PatientProfilePage() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <ScrollArea className="w-full pb-2">
-         <TabsList className="grid w-full grid-cols-5 min-w-[640px]">
+      <ScrollArea className="w-full pb-4">
+         <TabsList className="inline-flex h-auto">
             <TabsTrigger value="appointments">
               <Calendar className="mr-2 h-4 w-4" />
-              Mis Turnos Próximos
+              Mis Turnos
             </TabsTrigger>
             <TabsTrigger value="history">
                 <History className="mr-2 h-4 w-4" />
-                Historial de Turnos
+                Historial
             </TabsTrigger>
              <TabsTrigger value="reviews" className="relative">
                 <Star className="mr-2 h-4 w-4" />
-                Mis Opiniones
+                Opiniones
                 {pendingReviewsCount > 0 && (
                     <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0">
                         {pendingReviewsCount}
