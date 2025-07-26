@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -131,9 +130,15 @@ export default function DoctorAppointmentsPage() {
                 window.location.href = result.authUrl;
             } else if (result.error) {
                 throw new Error(result.error);
-            } else {
-                // El enlace se habrá actualizado en Firestore y el listener lo recogerá.
+            } else if (result.meetUrl) {
                 toast({
+                    title: "Reunión creada con éxito",
+                    description: "Serás redirigido a Google Meet.",
+                });
+                // Redirect to the meeting URL
+                window.location.href = result.meetUrl;
+            } else {
+                 toast({
                     title: "Reunión creada con éxito",
                     description: "El enlace de Google Meet se ha añadido al turno.",
                 });
@@ -146,6 +151,7 @@ export default function DoctorAppointmentsPage() {
                 variant: 'destructive',
             });
         } finally {
+            // Only set loading to false if not redirecting
             setIsActionLoading(null);
         }
     };

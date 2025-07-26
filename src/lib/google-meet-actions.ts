@@ -1,7 +1,7 @@
+
 'use server';
 
 import { google } from 'googleapis';
-// Ya no es necesario importar desde 'firebase/firestore'
 import { adminDb } from './firebase/admin';
 import { OAuth2Client } from 'google-auth-library';
 import { headers } from 'next/headers';
@@ -21,6 +21,7 @@ type ActionResult = {
   error?: string;
   needsAuth?: boolean;
   authUrl?: string;
+  meetUrl?: string; // Add meetUrl to the return type
 };
 
 // Helper function to create an OAuth2 client
@@ -113,7 +114,7 @@ export async function createGoogleMeet(params: CreateMeetParams): Promise<Action
     const appointmentRef = adminDb.collection('appointments').doc(appointmentId);
     await appointmentRef.update({ meetingUrl: meetUrl });
 
-    return {};
+    return { meetUrl };
   } catch (error: any) {
     console.error('Error in createGoogleMeet Server Action:', error);
     if (error.code === 401 || error.message.includes('invalid_grant')) {
