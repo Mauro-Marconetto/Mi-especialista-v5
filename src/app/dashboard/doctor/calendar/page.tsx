@@ -124,24 +124,16 @@ export default function DoctorAppointmentsPage() {
                 attendees: appointment.patientEmail ? [{ email: appointment.patientEmail }] : []
             });
 
-            if (result.needsAuth) {
-                // Redirigir al usuario a la URL de autorización de Google
-                console.log("Google OAuth Redirect URL:", result.authUrl);
+            if (result.needsAuth && result.authUrl) {
                 window.location.href = result.authUrl;
-            } else if (result.error) {
-                throw new Error(result.error);
             } else if (result.meetUrl) {
                 toast({
                     title: "Reunión creada con éxito",
                     description: "Serás redirigido a Google Meet.",
                 });
-                // Redirect to the meeting URL
                 window.location.href = result.meetUrl;
-            } else {
-                 toast({
-                    title: "Reunión creada con éxito",
-                    description: "El enlace de Google Meet se ha añadido al turno.",
-                });
+            } else if (result.error) {
+                throw new Error(result.error);
             }
         } catch (error) {
              console.error('Error creating Google Meet:', error);
@@ -151,7 +143,6 @@ export default function DoctorAppointmentsPage() {
                 variant: 'destructive',
             });
         } finally {
-            // Only set loading to false if not redirecting
             setIsActionLoading(null);
         }
     };
