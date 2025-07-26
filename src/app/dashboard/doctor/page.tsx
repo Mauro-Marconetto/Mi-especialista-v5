@@ -54,8 +54,7 @@ export default function DoctorDashboardPage() {
                     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
                     const upcomingAppointments = appointments.filter(appt => {
-                        const apptDate = new Date(appt.date + 'T00:00:00');
-                        return apptDate >= today && appt.status === 'Confirmado';
+                        return appt.status === 'Confirmado';
                     }).length;
 
                     const todayAppointments = appointments.filter(appt => {
