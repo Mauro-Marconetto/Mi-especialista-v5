@@ -199,7 +199,7 @@ export function AppointmentsTab() {
             </CardHeader>
             <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16">
+                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                          <AvatarImage src={nextAppointment.doctorPhotoUrl} alt={nextAppointment.doctorName} />
                         <AvatarFallback className="text-xl bg-primary/20 text-primary font-semibold">
                           {nextAppointment.doctorName.charAt(0)}
@@ -219,20 +219,20 @@ export function AppointmentsTab() {
                           <Stethoscope className="w-4 h-4" />
                           {nextAppointment.doctorSpecialty}
                         </p>
-                        <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
                             <span className="flex items-center gap-1.5">
                               <Calendar className="h-4 w-4" />
-                              {new Date(nextAppointment.date + 'T00:00:00').toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                              {new Date(nextAppointment.date + 'T00:00:00').toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Argentina/Buenos_Aires' })}
                             </span>
                             <span className="flex items-center gap-1.5"><Clock className="h-4 w-4" />{nextAppointment.time} hs</span>
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-col items-center gap-2 w-full sm:w-auto">
                     {nextAppointment.meetingUrl ? (
                         <Button 
                             size="lg" 
-                            className="w-full sm:w-auto"
+                            className="w-full"
                             onClick={() => handleJoinMeeting(nextAppointment.id, nextAppointment.meetingUrl!)}
                             disabled={isActionLoading === nextAppointment.id}
                         >
@@ -240,14 +240,14 @@ export function AppointmentsTab() {
                             {isActionLoading === nextAppointment.id ? 'Conectando...' : 'Unirse a la Consulta'}
                         </Button>
                     ) : (
-                        <Button size="lg" className="w-full sm:w-auto" onClick={() => handleJoinWaitingRoom(nextAppointment.id)} disabled={isActionLoading === nextAppointment.id}>
+                        <Button size="lg" className="w-full" onClick={() => handleJoinWaitingRoom(nextAppointment.id)} disabled={isActionLoading === nextAppointment.id}>
                             <Hourglass className="mr-2 h-5 w-5" />
                             {isActionLoading === nextAppointment.id ? 'Ingresando...' : 
                              'Ingresar a sala de espera'
                             }
                         </Button>
                     )}
-                     <div className="flex gap-2 mt-2 sm:mt-0 sm:flex-col w-full sm:w-auto">
+                     <div className="flex gap-2 mt-2 w-full">
                       <Button 
                         variant="outline" 
                         size="sm"

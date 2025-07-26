@@ -17,6 +17,7 @@ import { User as UserIcon, Calendar, History, Users, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function PatientProfilePage() {
   const [activeTab, setActiveTab] = useState("appointments");
@@ -106,7 +107,6 @@ export default function PatientProfilePage() {
     let unsubscribeReviews: () => void = () => {};
     let initialTabFromUrl: string | null = null;
   
-    // 1️⃣ Leer ?tab= solo en cliente, al montarse
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       initialTabFromUrl = params.get('tab');
@@ -115,7 +115,6 @@ export default function PatientProfilePage() {
       }
     }
   
-    // 2️⃣ Listener de autenticación
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       if (unsubscribeReviews) {
         unsubscribeReviews();
@@ -125,7 +124,6 @@ export default function PatientProfilePage() {
         setUser(currentUser);
         unsubscribeReviews = fetchPendingReviews(currentUser);
   
-        // Fallback solo si NO hubo ?tab
         if (!initialTabFromUrl) {
           const userDocRef = doc(db, "users", currentUser.uid);
           const userDoc = await getDoc(userDocRef);
@@ -149,7 +147,6 @@ export default function PatientProfilePage() {
       setIsLoading(false);
     });
   
-    // 3️⃣ Cleanup
     return () => {
       unsubscribeAuth();
       if (unsubscribeReviews) {
@@ -174,33 +171,36 @@ export default function PatientProfilePage() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-5 max-w-4xl mx-auto">
-        <TabsTrigger value="appointments">
-          <Calendar className="mr-2 h-4 w-4" />
-          Mis Turnos Próximos
-        </TabsTrigger>
-        <TabsTrigger value="history">
-            <History className="mr-2 h-4 w-4" />
-            Historial de Turnos
-        </TabsTrigger>
-         <TabsTrigger value="reviews" className="relative">
-            <Star className="mr-2 h-4 w-4" />
-            Mis Opiniones
-            {pendingReviewsCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0">
-                    {pendingReviewsCount}
-                </Badge>
-            )}
-        </TabsTrigger>
-        <TabsTrigger value="family">
-          <Users className="mr-2 h-4 w-4" />
-          Mi Familia
-        </TabsTrigger>
-        <TabsTrigger value="profile">
-          <UserIcon className="mr-2 h-4 w-4" />
-          Mi Perfil
-        </TabsTrigger>
-      </TabsList>
+      <ScrollArea className="w-full pb-2">
+         <TabsList className="grid w-full grid-cols-5 min-w-[640px]">
+            <TabsTrigger value="appointments">
+              <Calendar className="mr-2 h-4 w-4" />
+              Mis Turnos Próximos
+            </TabsTrigger>
+            <TabsTrigger value="history">
+                <History className="mr-2 h-4 w-4" />
+                Historial de Turnos
+            </TabsTrigger>
+             <TabsTrigger value="reviews" className="relative">
+                <Star className="mr-2 h-4 w-4" />
+                Mis Opiniones
+                {pendingReviewsCount > 0 && (
+                    <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0">
+                        {pendingReviewsCount}
+                    </Badge>
+                )}
+            </TabsTrigger>
+            <TabsTrigger value="family">
+              <Users className="mr-2 h-4 w-4" />
+              Mi Familia
+            </TabsTrigger>
+            <TabsTrigger value="profile">
+              <UserIcon className="mr-2 h-4 w-4" />
+              Mi Perfil
+            </TabsTrigger>
+          </TabsList>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
       <TabsContent value="appointments" className="mt-6">
         <AppointmentsTab />
       </TabsContent>

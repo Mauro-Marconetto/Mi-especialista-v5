@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -27,7 +28,7 @@ export function Footer() {
               Cuidando tu salud, simplificando tu vida.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:col-span-2">
             <div>
               <h4 className="font-semibold mb-2">Pacientes</h4>
               <ul className="space-y-2 text-sm">

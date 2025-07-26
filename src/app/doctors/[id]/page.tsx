@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -26,8 +25,8 @@ function DoctorProfileSkeleton() {
   return (
     <div className="bg-muted/30">
       <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
             <Card className="shadow-lg">
               <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
                 <Skeleton className="h-[150px] w-[150px] rounded-full" />
@@ -43,10 +42,8 @@ function DoctorProfileSkeleton() {
             <Skeleton className="h-12 w-full rounded-lg" />
             <Skeleton className="h-96 w-full rounded-lg" />
           </div>
-          <aside className="md:col-span-1">
-            <div className="sticky top-20">
-              <Skeleton className="h-[600px] w-full rounded-lg" />
-            </div>
+          <aside className="lg:col-span-1">
+            <Skeleton className="h-[600px] w-full rounded-lg" />
           </aside>
         </div>
       </div>
@@ -404,8 +401,8 @@ export default function DoctorProfilePage() {
             </Link>
           </Button>
         )}
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
             <Card className="shadow-lg">
               <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
                 <Image
@@ -422,7 +419,7 @@ export default function DoctorProfilePage() {
                     {doctor.status === 'approved' && (
                         <Badge variant="success">
                             <CheckCircle className="mr-1.5 h-4 w-4" />
-                            Profesional Verificado
+                            Verificado
                         </Badge>
                     )}
                   </div>
@@ -447,6 +444,17 @@ export default function DoctorProfilePage() {
                 </div>
               </CardContent>
             </Card>
+
+            <div className="lg:hidden">
+                 <Card className="shadow-lg">
+                    <CardHeader>
+                        <CardTitle className="font-headline">{isRescheduling ? "Reprogramar Turno" : "Agendar Turno"}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Booking Content goes here for mobile */}
+                    </CardContent>
+                 </Card>
+            </div>
 
             <Tabs defaultValue="info" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
@@ -527,7 +535,7 @@ export default function DoctorProfilePage() {
             </Tabs>
           </div>
           
-          <aside className="md:col-span-1">
+          <aside className="lg:col-span-1">
             <div className="sticky top-20">
               <Card className="shadow-lg">
                 <CardHeader>

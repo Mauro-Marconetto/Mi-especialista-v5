@@ -9,7 +9,7 @@ import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
-import { Stethoscope, LogIn, LogOut, User as UserIcon, Repeat } from "lucide-react";
+import { Stethoscope, LogIn, LogOut, User as UserIcon, Repeat, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu, 
@@ -19,8 +19,10 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 type UserData = {
   role: 'paciente' | 'profesional' | null;
@@ -33,6 +35,7 @@ export function Header() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [userData, setUserData] = useState<UserData>({ role: null, permanentRole: null });
   const [isClientReady, setIsClientReady] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -81,10 +84,9 @@ export function Header() {
     setUserData(prev => ({ ...prev, role: newRole }));
     
     router.push(newRole === 'paciente' ? '/search' : '/dashboard/doctor');
-    // We can refresh to ensure layout and other components update correctly
     router.refresh(); 
   };
-
+  
   const getInitials = (email: string | null | undefined) => {
     if (!email) return 'U';
     return email.charAt(0).toUpperCase();
@@ -106,38 +108,60 @@ export function Header() {
     return null;
   }
 
+  const navLinks = [
+    { href: "/search", label: "Buscar Médicos", roles: ['paciente', 'profesional', null] },
+    { href: "/dashboard/doctor", label: "Mi Panel", roles: ['profesional'] },
+    { href: "/dashboard/patient/profile", label: "Mis Turnos", roles: ['paciente'] },
+  ];
+
+  const MobileNav = () => (
+    <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+        <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu />
+                <span className="sr-only">Abrir menú</span>
+            </Button>
+        </SheetTrigger>
+        <SheetContent side="left">
+            <Link href={getHomePath()} className="flex items-center gap-2 mb-8" onClick={() => setIsMobileMenuOpen(false)}>
+              <Stethoscope className="h-6 w-6 text-primary" />
+              <span className="font-bold text-lg font-headline">Mi Especialista</span>
+            </Link>
+            <nav className="flex flex-col gap-4">
+              {navLinks.filter(link => link.roles.includes(userData.role)).map(link => (
+                  <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-lg font-medium text-muted-foreground hover:text-foreground"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                      {link.label}
+                  </Link>
+              ))}
+            </nav>
+        </SheetContent>
+    </Sheet>
+  );
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center mx-auto px-4 md:px-6">
         <Link href={getHomePath()} className="flex items-center gap-2 mr-6">
           <Stethoscope className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg font-headline">Mi Especialista</span>
+          <span className="hidden sm:inline font-bold text-lg font-headline">Mi Especialista</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link
-            href="/search"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            Buscar Médicos
-          </Link>
-          {isClientReady && userData.role === 'profesional' && (
+          {navLinks.filter(link => link.roles.includes(userData.role)).map(link => (
             <Link
-              href="/dashboard/doctor"
+              key={link.href}
+              href={link.href}
               className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
-              Mi Panel
+              {link.label}
             </Link>
-          )}
-          {isClientReady && userData.role === 'paciente' && (
-            <Link
-              href="/dashboard/patient/profile"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              Mis Turnos
-            </Link>
-          )}
+          ))}
         </nav>
-        <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
           {!isClientReady ? (
              <Skeleton className="h-10 w-24 rounded-md" />
           ) : user ? (
@@ -189,6 +213,7 @@ export function Header() {
               </Link>
             </Button>
           )}
+           <MobileNav />
         </div>
       </div>
     </header>

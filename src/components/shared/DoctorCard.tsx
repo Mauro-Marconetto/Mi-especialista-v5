@@ -34,19 +34,19 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
 
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-      <CardHeader className="flex flex-row items-start gap-4 p-4">
+      <CardHeader className="flex flex-col sm:flex-row items-start gap-4 p-4">
         <Image
           src={doctor.photoURL}
           alt={`Foto de ${doctor.title} ${doctor.name}`}
           width={80}
           height={80}
-          className="rounded-full border-2 border-primary/50 object-cover"
+          className="rounded-full border-2 border-primary/50 object-cover mx-auto sm:mx-0"
           data-ai-hint="doctor portrait"
         />
-        <div className="flex-grow">
+        <div className="flex-grow text-center sm:text-left">
           <h3 className="font-bold text-lg font-headline">{doctor.title} {doctor.name}</h3>
           <p className="text-sm text-primary">{doctor.specialty}</p>
-          <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-1">
+          <div className="flex items-center justify-center sm:justify-start gap-1.5 text-muted-foreground text-xs mt-1">
             <MapPin className="h-3 w-3" />
             <span>{doctor.province}</span>
           </div>

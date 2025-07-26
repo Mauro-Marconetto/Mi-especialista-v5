@@ -10,6 +10,8 @@ import type { Doctor } from "@/lib/placeholder-data";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Filter } from "lucide-react";
 
 
 export default function SearchPage() {
@@ -67,17 +69,32 @@ export default function SearchPage() {
     <div className="container mx-auto px-4 md:px-6 py-8">
       <div className="flex flex-col md:flex-row gap-8">
         <aside className="w-full md:w-1/4 lg:w-1/5">
-          <div className="sticky top-20">
-            <h2 className="text-lg font-semibold mb-4 font-headline">Filtrar Búsqueda</h2>
-            <DoctorSearchForm />
-          </div>
+           <div className="md:hidden mb-4">
+              <Accordion type="single" collapsible>
+                <AccordionItem value="filters">
+                  <AccordionTrigger className="text-lg font-semibold font-headline">
+                    <div className="flex items-center gap-2">
+                        <Filter className="h-5 w-5" />
+                        Filtrar Búsqueda
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <DoctorSearchForm />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+           </div>
+           <div className="hidden md:block sticky top-20">
+              <h2 className="text-lg font-semibold mb-4 font-headline">Filtrar Búsqueda</h2>
+              <DoctorSearchForm />
+           </div>
         </aside>
 
         <main className="w-full md:w-3/4 lg:w-4/5">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl md:text-3xl font-bold font-headline">Resultados de la Búsqueda</h1>
             {!isLoading && (
-              <p className="text-muted-foreground">{doctors.length} profesionales encontrados</p>
+              <p className="text-muted-foreground text-sm sm:text-base">{doctors.length} profesionales encontrados</p>
             )}
           </div>
           <Separator className="mb-6"/>

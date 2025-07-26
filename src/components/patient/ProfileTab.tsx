@@ -351,7 +351,7 @@ export function ProfileTab({ setActiveTab }: ProfileTabProps) {
                 />
              </div>
 
-            <Button type="submit" className="mt-4" disabled={!isDirty || isSubmitting}>
+            <Button type="submit" className="mt-4 w-full sm:w-auto" disabled={!isDirty || isSubmitting}>
               {isSubmitting ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </form>
